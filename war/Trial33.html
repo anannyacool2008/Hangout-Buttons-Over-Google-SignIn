@@ -1,0 +1,152 @@
+
+
+<html>
+<head>
+<script src="https://apis.google.com/js/client:platform.js" async defer></script>
+<script src="https://apis.google.com/js/platform.js" async defer></script>
+</head>
+
+
+
+
+<span id="signinButton">
+  <span
+    class="g-signin"
+    data-callback="signinCallback"
+    data-clientid="647903853058-qg8gm7v26v4cjiuufk6l17tepv5pobtc.apps.googleusercontent.com"
+    data-cookiepolicy="single_host_origin"
+    data-requestvisibleactions="http://schema.org/AddAction"
+    data-scope="https://www.googleapis.com/auth/plus.login email">
+  </span>
+</span>
+</br>
+</br>
+
+<button id="signout" onclick="gapi.auth.signOut();">
+	signout
+</button>
+
+
+</br>
+</br>
+
+
+
+
+
+<div id="contain"></div>
+<p id="para"></p>
+
+
+<script type="text/javascript">
+
+
+
+
+
+
+
+
+
+
+
+
+function signinCallback(authResult) {
+  if (authResult['status']['signed_in']) {
+    // Update the app to reflect a signed in user
+    // Hide the sign-in button now that the user is authorized, for example:
+    document.getElementById('signinButton').setAttribute('style', 'display: none');
+    console.log("yay");
+
+// This sample assumes a client object has been created.
+// To learn more about creating a client, check out the starter:
+//  https://developers.google.com/+/quickstart/javascript
+
+//gapi.auth.signIn({ 'scope': 'email' ,'data-cookiepolicy':'single_host_origin'});
+
+
+
+
+
+
+
+
+
+gapi.client.load('plus','v1', function(){
+ var request = gapi.client.plus.people.list({
+   'userId': 'me',
+   'collection':'visible'
+ });
+
+
+ request.execute(function(resp) 
+{
+console.log('The users are:'+resp.totalItems);
+
+for(var i=0;i<(resp.totalItems<10?resp.totalItems:10);i++)
+{
+	var idiv=document.createElement('div');
+idiv.id='div'+i.toString();
+var ibr=document.createElement('br');
+var ipar=document.createElement('p');
+var a=document.createElement('a');
+var b=document.createElement('a');
+
+
+var imag=document.createElement('img');
+ipar.innerHTML=(resp.items[i].displayName).toString();
+a.setAttribute('href',resp.items[i].url);
+a.innerHTML="Click to go to "+resp.items[i].displayName+"'s page";
+b.setAttribute('href',resp.items[i].image.url);
+b.innerHTML="Click to go to "+resp.items[i].displayName+"'s picture";
+imag.src=b;
+var par=document.createElement('p');
+
+
+
+
+document.getElementById('contain').appendChild(ipar);
+document.getElementById('contain').appendChild(par);
+document.getElementById('contain').appendChild(imag);
+document.getElementById('contain').appendChild(idiv);
+document.getElementById('contain').appendChild(ibr);
+document.getElementById('contain').appendChild(a);
+document.getElementById('contain').appendChild(par);
+document.getElementById('contain').appendChild(par);
+document.getElementById('contain').appendChild(ibr);
+
+
+
+
+gapi.hangout.render(idiv.id, { 
+	'render': 'createhangout' ,
+
+'invites': [{ id : (resp.items[i].id).toString(), invite_type : 'PROFILE' }]
+});
+
+
+
+
+
+
+
+}
+
+
+   
+ });
+});
+
+  } else {
+    // Update the app to reflect a signed out user
+    // Possible error values:
+    //   "user_signed_out" - User is signed-out
+    //   "access_denied" - User denied access to your app
+    //   "immediate_failed" - Could not automatically log in the user
+    console.log('Sign-in state: ' + authResult['error']);
+  }
+}
+</script>
+
+
+</html>
